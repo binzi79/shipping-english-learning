@@ -91,6 +91,7 @@
     }
     .sentence-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
     .sentence-text { font-size: 1.05rem; line-height: 1.8; color: #1e293b; font-style: italic; }
+    .vocab-inline { font-style: normal; color: #0f766e; font-size: 0.82em; font-weight: 500; white-space: nowrap; }
 
     /* ── Stage Tabs ── */
     .stage-tabs {
@@ -508,7 +509,7 @@ function renderUnit() {
   badge.textContent  = unit.category;
   badge.style.background = unit.categoryColor;
 
-  document.getElementById('sentenceText').textContent = unit.sentence;
+  document.getElementById('sentenceText').innerHTML = annotateWithVocab(unit.sentence, unit.vocabulary || []);
   document.getElementById('prevBtn').disabled = currentUnit === 0;
   document.getElementById('nextBtn').disabled = currentUnit === UNITS.length - 1;
 
@@ -533,7 +534,23 @@ function renderStage() {
 // ══════════════════════════════════════════════════════
 //  LEARN
 // ══════════════════════════════════════════════════════
+// Annotate vocabulary words in text with inline meanings
+function annotateWithVocab(text, vocabList) {
+  if (!vocabList || !vocabList.length) return esc(text);
+  // Sort longest phrase first to avoid partial matches
+  const sorted = [...vocabList].sort((a, b) => b.word.length - a.word.length);
+  let result = esc(text);
+  for (const v of sorted) {
+    const escaped = v.word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regex = new RegExp('(' + escaped + ')', 'gi');
+    const meaning = esc(v.meaning);
+    result = result.replace(regex, `$1<span class="vocab-inline">（${meaning}）</span>`);
+  }
+  return result;
+}
+
 function renderLearn(unit) {
+  const vocab = unit.vocabulary || [];
   return unit.learn.steps.map(step => {
     switch (step.type) {
       case 'intro':
@@ -541,7 +558,7 @@ function renderLearn(unit) {
       case 'highlight':
         return `<div class="learn-step">
           <div class="step-highlight">
-            <div class="quote">"${esc(step.quote)}"</div>
+            <div class="quote">"${annotateWithVocab(step.quote, vocab)}"</div>
             <div class="comment">${esc(step.comment)}</div>
           </div></div>`;
       case 'signal':
