@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>航运英语长句学习</title>
+  <script src="content.js"></script>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      background: #f0f4f8;
+      color: #1e293b;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .app-header {
+      background: #0f2942;
+      color: #fff;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .app-logo { font-size: 1.1rem; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
+    .app-logo span { font-size: 1.3rem; }
+    .header-right { display: flex; gap: 10px; align-items: center; }
+    .btn-icon {
+      background: rgba(255,255,255,0.12);
+      border: none;
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    .btn-icon:hover { background: rgba(255,255,255,0.22); }
+
+    /* ── Main Container ── */
+    .container { max-width: 820px; margin: 0 auto; padding: 20px 16px 60px; }
+
+    /* ── Unit Nav ── */
+    .unit-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .nav-btn {
+      background: #fff;
+      border: 1.5px solid #cbd5e1;
+      color: #334155;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover:not(:disabled) { border-color: #1d6fa4; color: #1d6fa4; background: #f0f7ff; }
+    .nav-btn:disabled { opacity: 0.35; cursor: default; }
+    .unit-meta { text-align: center; }
+    .unit-counter { font-size: 0.85rem; color: #64748b; display: block; margin-bottom: 6px; }
+    .category-badge {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── Sentence Card ── */
+    .sentence-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      border-left: 4px solid #1d6fa4;
+    }
+    .sentence-label { font-size: 0.75rem; font-weight: 600; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .sentence-text { font-size: 1.05rem; line-height: 1.8; color: #1e293b; font-style: italic; }
+
+    /* ── Stage Tabs ── */
+    .stage-tabs {
+      display: flex;
+      background: #fff;
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      gap: 2px;
+      overflow-x: auto;
+    }
+    .stage-tab {
+      flex: 1;
+      min-width: 80px;
+      padding: 9px 6px;
+      border: none;
+      background: transparent;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 500;
+      color: #64748b;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .stage-tab:hover { background: #f1f5f9; color: #1e293b; }
+    .stage-tab.active { background: #0f2942; color: #fff; }
+
+    /* ── Stage Content ── */
+    .stage-content { background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); min-height: 300px; }
+
+    /* ─── LEARN ─── */
+    .learn-step { margin-bottom: 20px; }
+    .step-intro { color: #475569; font-size: 0.95rem; line-height: 1.7; font-style: italic; }
+    .step-normal { color: #334155; font-size: 0.95rem; line-height: 1.7; }
+    .step-highlight {
+      background: #f0f7ff;
+      border-left: 3px solid #1d6fa4;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+    }
+    .step-highlight .quote {
+      font-style: italic;
+      font-size: 0.95rem;
+      color: #1d4ed8;
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+    .step-highlight .comment { font-size: 0.92rem; color: #334155; line-height: 1.65; }
+    .step-signal {
+      background: #fffbeb;
+      border-left: 3px solid #f59e0b;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+    }
+    .step-signal .signal-word {
+      display: inline-block;
+      background: #f59e0b;
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      font-style: normal;
+    }
+    .step-signal .signal-text { font-size: 0.92rem; color: #334155; line-height: 1.65; }
+    .step-conclusion {
+      background: #f0fdf4;
+      border-left: 3px solid #22c55e;
+      border-radius: 0 8px 8px 0;
+      padding: 12px 16px;
+      font-size: 0.92rem;
+      color: #166534;
+      line-height: 1.65;
+    }
+    .step-conclusion::before { content: "💡 "; }
+
+    /* ─── REVIEW ─── */
+    .review-summary {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: #1e293b;
+      margin-bottom: 20px;
+      border: 1px solid #e2e8f0;
+    }
+    .review-summary::before { content: "📌 完整理解："; display: block; font-size: 0.78rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .section-title { font-size: 0.78rem; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+    .signal-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 20px; }
+    .signal-table th { text-align: left; padding: 8px 12px; background: #f1f5f9; color: #64748b; font-weight: 600; font-size: 0.8rem; }
+    .signal-table td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; line-height: 1.5; }
+    .signal-table td:first-child { font-weight: 700; color: #f59e0b; font-family: monospace; font-size: 0.95rem; }
+    .signal-table tr:last-child td { border-bottom: none; }
+    .pattern-box {
+      background: #1e293b;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 12px;
+    }
+    .pattern-code { font-family: monospace; font-size: 0.9rem; color: #7dd3fc; line-height: 1.7; }
+    .pattern-note { font-size: 0.85rem; color: #94a3b8; margin-top: 8px; }
+
+    /* ─── TEST ─── */
+    .test-progress { display: flex; gap: 6px; margin-bottom: 20px; }
+    .progress-dot {
+      flex: 1;
+      height: 4px;
+      border-radius: 2px;
+      background: #e2e8f0;
+      transition: background 0.3s;
+    }
+    .progress-dot.done { background: #22c55e; }
+    .progress-dot.current { background: #1d6fa4; }
+    .question-text { font-size: 1rem; font-weight: 600; color: #1e293b; margin-bottom: 18px; line-height: 1.5; }
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+    .option-btn {
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px 16px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #334155;
+      transition: all 0.2s;
+    }
+    .option-btn:hover:not(.locked) { border-color: #1d6fa4; background: #f0f7ff; color: #1e40af; }
+    .option-btn.selected { border-color: #1d6fa4; background: #eff6ff; color: #1e40af; }
+    .option-btn.correct { border-color: #22c55e !important; background: #f0fdf4 !important; color: #166534 !important; }
+    .option-btn.wrong { border-color: #ef4444 !important; background: #fef2f2 !important; color: #991b1b !important; }
+    .option-btn.locked { cursor: default; }
+    .submit-btn {
+      background: #0f2942;
+      color: #fff;
+      border: none;
+      padding: 11px 28px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-right: 10px;
+    }
+    .submit-btn:hover:not(:disabled) { background: #1d4ed8; }
+    .submit-btn:disabled { opacity: 0.4; cursor: default; }
+    .next-btn {
+      background: #fff;
+      border: 1.5px solid #0f2942;
+      color: #0f2942;
+      padding: 10px 24px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .next-btn:hover { background: #0f2942; color: #fff; }
+    .feedback-box {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      display: none;
+    }
+    .feedback-box.show { display: block; }
+    .feedback-box.correct { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .feedback-box.wrong { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+    .test-result {
+      text-align: center;
+      padding: 20px;
+    }
+    .result-score { font-size: 3rem; font-weight: 800; color: #0f2942; margin-bottom: 8px; }
+    .result-msg { font-size: 1rem; color: #475569; margin-bottom: 24px; }
+    .retry-btn {
+      background: #0f2942;
+      color: #fff;
+      border: none;
+      padding: 11px 28px;
+      border-radius: 8px;
+      font-size: 0.92rem;
+      cursor: pointer;
+    }
+
+    /* ─── EXTEND ─── */
+    .extend-intro { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; line-height: 1.6; }
+    .extend-btn {
+      background: linear-gradient(135deg, #0f2942, #1d6fa4);
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: opacity 0.2s;
+    }
+    .extend-btn:hover:not(:disabled) { opacity: 0.88; }
+    .extend-btn:disabled { opacity: 0.5; cursor: default; }
+    .extend-loading { color: #64748b; font-size: 0.9rem; margin-bottom: 16px; }
+    .extend-result {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 18px 20px;
+      font-size: 0.93rem;
+      line-height: 1.8;
+      color: #1e293b;
+      white-space: pre-wrap;
+      border: 1px solid #e2e8f0;
+    }
+    .extend-result h3 { font-size: 1rem; margin-bottom: 8px; margin-top: 16px; color: #0f2942; }
+    .extend-result h3:first-child { margin-top: 0; }
+    .no-key-box {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 16px 18px;
+      font-size: 0.9rem;
+      color: #78350f;
+      line-height: 1.6;
+    }
+    .no-key-box a { color: #b45309; cursor: pointer; text-decoration: underline; }
+
+    /* ─── VOCAB ─── */
+    .vocab-grid { display: flex; flex-direction: column; gap: 12px; }
+    .vocab-card {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 14px 16px;
+      border: 1px solid #e2e8f0;
+    }
+    .vocab-word { font-size: 1.05rem; font-weight: 700; color: #0f2942; margin-bottom: 4px; }
+    .vocab-looks { font-size: 0.8rem; color: #f59e0b; font-weight: 600; margin-bottom: 8px; }
+    .vocab-looks::before { content: "⚠ 看着像："; }
+    .vocab-meaning { font-size: 0.92rem; color: #1e293b; font-weight: 600; margin-bottom: 4px; }
+    .vocab-usage { font-size: 0.85rem; color: #475569; font-style: italic; margin-bottom: 6px; }
+    .vocab-note { font-size: 0.83rem; color: #64748b; line-height: 1.5; }
+    .vocab-note::before { content: "💬 "; }
+
+    /* ── Settings Modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 200;
+    }
+    .modal-overlay.hidden { display: none; }
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      padding: 28px;
+      width: 90%;
+      max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    }
+    .modal-box h3 { font-size: 1.1rem; font-weight: 700; color: #0f2942; margin-bottom: 20px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: #475569; margin-bottom: 6px; }
+    .form-group input {
+      width: 100%;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .form-group input:focus { border-color: #1d6fa4; }
+    .form-group small { display: block; font-size: 0.78rem; color: #94a3b8; margin-top: 5px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+    .btn-primary {
+      background: #0f2942; color: #fff; border: none;
+      padding: 10px 22px; border-radius: 8px; font-size: 0.9rem;
+      font-weight: 600; cursor: pointer; flex: 1;
+    }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-secondary {
+      background: #fff; color: #475569;
+      border: 1.5px solid #e2e8f0;
+      padding: 10px 22px; border-radius: 8px; font-size: 0.9rem;
+      cursor: pointer; flex: 1;
+    }
+    .btn-secondary:hover { border-color: #94a3b8; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .stage-tab { font-size: 0.75rem; padding: 8px 4px; }
+      .sentence-text { font-size: 0.95rem; }
+      .stage-content { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="app-logo"><span>⚓</span>航运英语长句学习</div>
+  <div class="header-right">
+    <button class="btn-icon" id="settingsBtn">⚙ 设置</button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<div class="container">
+
+  <!-- Unit Navigation -->
+  <div class="unit-nav">
+    <button class="nav-btn" id="prevBtn">‹ 上一句</button>
+    <div class="unit-meta">
+      <span class="unit-counter" id="unitCounter"></span>
+      <span class="category-badge" id="categoryBadge"></span>
+    </div>
+    <button class="nav-btn" id="nextBtn">下一句 ›</button>
+  </div>
+
+  <!-- Sentence -->
+  <div class="sentence-card">
+    <div class="sentence-label">原句</div>
+    <div class="sentence-text" id="sentenceText"></div>
+  </div>
+
+  <!-- Stage Tabs -->
+  <div class="stage-tabs">
+    <button class="stage-tab active" data-stage="learn">📖 学习</button>
+    <button class="stage-tab" data-stage="review">🔄 复习</button>
+    <button class="stage-tab" data-stage="test">✏️ 测试</button>
+    <button class="stage-tab" data-stage="extend">🤖 扩展知识</button>
+    <button class="stage-tab" data-stage="vocab">📚 专业单词</button>
+  </div>
+
+  <!-- Content -->
+  <div class="stage-content" id="stageContent"></div>
+
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay hidden" id="settingsModal">
+  <div class="modal-box">
+    <h3>⚙ 设置</h3>
+    <div class="form-group">
+      <label>DeepSeek API Key</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-..." />
+      <small>用于「扩展知识」功能。Key 仅保存在本地浏览器，不会上传至任何服务器。</small>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="saveSettingsBtn">保存</button>
+      <button class="btn-secondary" id="closeSettingsBtn">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════
+let currentUnit  = 0;
+let currentStage = 'learn';
+let testState    = { q: 0, score: 0, answered: false, selected: null };
+let extCache     = {};  // unitId → generated text
+let apiKey       = localStorage.getItem('ds_api_key') || '';
+
+// ══════════════════════════════════════════════════════
+//  BOOT
+// ══════════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  renderUnit();
+  bindEvents();
+});
+
+function bindEvents() {
+  document.getElementById('prevBtn').addEventListener('click', () => changeUnit(-1));
+  document.getElementById('nextBtn').addEventListener('click', () => changeUnit(1));
+
+  document.querySelectorAll('.stage-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentStage = tab.dataset.stage;
+      document.querySelectorAll('.stage-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      renderStage();
+    });
+  });
+
+  document.getElementById('settingsBtn').addEventListener('click', openSettings);
+  document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+  document.getElementById('saveSettingsBtn').addEventListener('click', saveSettings);
+  document.getElementById('settingsModal').addEventListener('click', e => {
+    if (e.target === document.getElementById('settingsModal')) closeSettings();
+  });
+}
+
+// ══════════════════════════════════════════════════════
+//  UNIT
+// ══════════════════════════════════════════════════════
+function changeUnit(dir) {
+  const next = currentUnit + dir;
+  if (next < 0 || next >= UNITS.length) return;
+  currentUnit  = next;
+  currentStage = 'learn';
+  testState    = { q: 0, score: 0, answered: false, selected: null };
+  document.querySelectorAll('.stage-tab').forEach((t, i) => t.classList.toggle('active', i === 0));
+  renderUnit();
+}
+
+function renderUnit() {
+  const unit = UNITS[currentUnit];
+
+  document.getElementById('unitCounter').textContent = `第 ${currentUnit + 1} 句 / 共 ${UNITS.length} 句`;
+  const badge = document.getElementById('categoryBadge');
+  badge.textContent  = unit.category;
+  badge.style.background = unit.categoryColor;
+
+  document.getElementById('sentenceText').textContent = unit.sentence;
+  document.getElementById('prevBtn').disabled = currentUnit === 0;
+  document.getElementById('nextBtn').disabled = currentUnit === UNITS.length - 1;
+
+  renderStage();
+}
+
+// ══════════════════════════════════════════════════════
+//  STAGE ROUTER
+// ══════════════════════════════════════════════════════
+function renderStage() {
+  const unit = UNITS[currentUnit];
+  const el   = document.getElementById('stageContent');
+  switch (currentStage) {
+    case 'learn':  el.innerHTML = renderLearn(unit);  break;
+    case 'review': el.innerHTML = renderReview(unit); break;
+    case 'test':   renderTestStage(unit);             break;
+    case 'extend': renderExtend(unit);                break;
+    case 'vocab':  el.innerHTML = renderVocab(unit);  break;
+  }
+}
+
+// ══════════════════════════════════════════════════════
+//  LEARN
+// ══════════════════════════════════════════════════════
+function renderLearn(unit) {
+  return unit.learn.steps.map(step => {
+    switch (step.type) {
+      case 'intro':
+        return `<div class="learn-step"><p class="step-intro">${esc(step.text)}</p></div>`;
+      case 'highlight':
+        return `<div class="learn-step">
+          <div class="step-highlight">
+            <div class="quote">"${esc(step.quote)}"</div>
+            <div class="comment">${esc(step.comment)}</div>
+          </div></div>`;
+      case 'signal':
+        return `<div class="learn-step">
+          <div class="step-signal">
+            <span class="signal-word">${esc(step.word)}</span>
+            <div class="signal-text">${esc(step.text)}</div>
+          </div></div>`;
+      case 'normal':
+        return `<div class="learn-step"><p class="step-normal">${esc(step.text)}</p></div>`;
+      case 'conclusion':
+        return `<div class="learn-step"><div class="step-conclusion">${esc(step.text)}</div></div>`;
+      default: return '';
+    }
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════
+//  REVIEW
+// ══════════════════════════════════════════════════════
+function renderReview(unit) {
+  const r = unit.review;
+  const rows = r.signalWords.map(sw =>
+    `<tr>
+      <td>${esc(sw.word)}</td>
+      <td>${esc(sw.role)}</td>
+      <td>${esc(sw.meaning)}</td>
+    </tr>`
+  ).join('');
+
+  return `
+    <div class="review-summary">${esc(r.summary)}</div>
+
+    <div class="section-title">关键信号词</div>
+    <table class="signal-table">
+      <thead><tr><th>信号词</th><th>作用</th><th>含义</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <div class="section-title">句型模板</div>
+    <div class="pattern-box">
+      <div class="pattern-code">${esc(r.pattern)}</div>
+      <div class="pattern-note">${esc(r.patternNote)}</div>
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════════════════
+//  TEST
+// ══════════════════════════════════════════════════════
+function renderTestStage(unit) {
+  const el = document.getElementById('stageContent');
+  if (testState.q >= unit.test.length) {
+    renderTestResult(unit, el);
+    return;
+  }
+  const q   = unit.test[testState.q];
+  const dots = unit.test.map((_, i) => {
+    let cls = 'progress-dot';
+    if (i < testState.q) cls += ' done';
+    else if (i === testState.q) cls += ' current';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  const opts = q.options.map((opt, i) =>
+    `<button class="option-btn" data-idx="${i}" onclick="selectOption(${i})">${esc(opt)}</button>`
+  ).join('');
+
+  el.innerHTML = `
+    <div class="test-progress">${dots}</div>
+    <div class="question-text">Q${testState.q + 1}. ${esc(q.question)}</div>
+    <div class="options" id="optionsEl">${opts}</div>
+    <div>
+      <button class="submit-btn" id="submitBtn" disabled onclick="submitAnswer()">确认</button>
+      <button class="next-btn hidden" id="nextQBtn" onclick="nextQuestion()">下一题 ›</button>
+    </div>
+    <div class="feedback-box" id="feedbackBox"></div>
+  `;
+}
+
+function selectOption(idx) {
+  if (testState.answered) return;
+  testState.selected = idx;
+  document.querySelectorAll('.option-btn').forEach((b, i) => {
+    b.classList.toggle('selected', i === idx);
+  });
+  document.getElementById('submitBtn').disabled = false;
+}
+
+function submitAnswer() {
+  if (testState.answered) return;
+  testState.answered = true;
+  const unit = UNITS[currentUnit];
+  const q    = unit.test[testState.q];
+  const correct = testState.selected === q.answer;
+  if (correct) testState.score++;
+
+  document.querySelectorAll('.option-btn').forEach((b, i) => {
+    b.classList.add('locked');
+    if (i === q.answer) b.classList.add('correct');
+    else if (i === testState.selected && !correct) b.classList.add('wrong');
+    b.classList.remove('selected');
+  });
+
+  const fb = document.getElementById('feedbackBox');
+  fb.className = `feedback-box show ${correct ? 'correct' : 'wrong'}`;
+  fb.innerHTML = `${correct ? '✅ 正确！' : '❌ 不对。'} ${esc(q.explanation)}`;
+
+  document.getElementById('submitBtn').classList.add('hidden');
+  const nextBtn = document.getElementById('nextQBtn');
+  nextBtn.classList.remove('hidden');
+  const isLast = testState.q >= unit.test.length - 1;
+  nextBtn.textContent = isLast ? '查看结果' : '下一题 ›';
+}
+
+function nextQuestion() {
+  testState.q++;
+  testState.answered = false;
+  testState.selected = null;
+  renderTestStage(UNITS[currentUnit]);
+}
+
+function renderTestResult(unit, el) {
+  const total = unit.test.length;
+  const score = testState.score;
+  const pct   = Math.round(score / total * 100);
+  let msg = pct === 100 ? '完美！全部答对 🎉' : pct >= 67 ? '不错，继续加油！' : '多复习几遍再试试吧。';
+  el.innerHTML = `
+    <div class="test-result">
+      <div class="result-score">${score} / ${total}</div>
+      <div class="result-msg">${msg}</div>
+      <button class="retry-btn" onclick="retryTest()">重新测试</button>
+    </div>
+  `;
+}
+
+function retryTest() {
+  testState = { q: 0, score: 0, answered: false, selected: null };
+  renderTestStage(UNITS[currentUnit]);
+}
+
+// ══════════════════════════════════════════════════════
+//  EXTEND
+// ══════════════════════════════════════════════════════
+function renderExtend(unit) {
+  const el = document.getElementById('stageContent');
+  const cached = extCache[unit.id];
+
+  if (!apiKey) {
+    el.innerHTML = `
+      <p class="extend-intro">「扩展知识」会调用 DeepSeek AI，为你生成类似句型示例、实际应用场景和相关专业背景。</p>
+      <div class="no-key-box">
+        ⚠ 需要先设置 DeepSeek API Key。<br><br>
+        <a onclick="openSettings()">点击这里打开设置</a>，填入你的 DeepSeek API Key（在 <a href="https://platform.deepseek.com" target="_blank">platform.deepseek.com</a> 获取）。
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = `
+    <p class="extend-intro">点击下方按钮，AI 会为这个句子生成：类似句型示例 + 实际使用场景 + 相关专业背景知识。</p>
+    <button class="extend-btn" id="extendBtn" onclick="generateExtend()">${cached ? '重新生成' : '🤖 生成扩展讲解'}</button>
+    <div id="extendOutput">${cached ? `<div class="extend-result">${cached}</div>` : ''}</div>
+  `;
+}
+
+async function generateExtend() {
+  const unit = UNITS[currentUnit];
+  const btn  = document.getElementById('extendBtn');
+  const out  = document.getElementById('extendOutput');
+
+  btn.disabled   = true;
+  btn.textContent = '生成中…';
+  out.innerHTML  = `<div class="extend-loading">⏳ AI 正在分析句子，请稍候…</div>`;
+
+  const systemPrompt = `你是一位专业的航运英语教师，帮助中文母语者深入理解航运专业英文长句。
+讲解风格：口语化、实用、像真人老师在解释。
+请用中文讲解，保留英文原文和专业术语。`;
+
+  const userPrompt = `请对以下航运英语句子做扩展讲解：
+
+"${unit.sentence}"
+
+请包含以下三个部分：
+
+1. 【使用场景】这个句型在实际工作中会出现在哪类文件或场合？举具体例子。
+
+2. 【类似句子】举 2 个结构相似的句子（可以稍简单些），并用同样的方式解释它们的主干和关键词。
+
+3. 【专业背景】与这句话相关的航运/贸易背景知识，帮助更好地理解这句话的业务含义。`;
+
+  try {
+    const res = await fetch('https://api.deepseek.com/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'deepseek-chat',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user',   content: userPrompt }
+        ],
+        max_tokens: 1200,
+        temperature: 0.7
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '（未收到内容）';
+    extCache[unit.id] = formatExtend(text);
+    out.innerHTML = `<div class="extend-result">${extCache[unit.id]}</div>`;
+  } catch (e) {
+    out.innerHTML = `<div class="no-key-box">❌ 请求失败：${esc(e.message)}<br><br>请检查 API Key 是否正确，或网络是否可用。</div>`;
+  }
+
+  btn.disabled   = false;
+  btn.textContent = '重新生成';
+}
+
+function formatExtend(text) {
+  // Simple markdown-lite: bold headers, line breaks
+  return text
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/【(.+?)】/g, '<h3>【$1】</h3>')
+    .replace(/\n/g, '<br>');
+}
+
+// ══════════════════════════════════════════════════════
+//  VOCAB
+// ══════════════════════════════════════════════════════
+function renderVocab(unit) {
+  const cards = unit.vocabulary.map(v => `
+    <div class="vocab-card">
+      <div class="vocab-word">${esc(v.word)}</div>
+      <div class="vocab-looks">${esc(v.looksLike)}</div>
+      <div class="vocab-meaning">→ ${esc(v.meaning)}</div>
+      <div class="vocab-usage">${esc(v.usage)}</div>
+      <div class="vocab-note">${esc(v.note)}</div>
+    </div>
+  `).join('');
+  return `<div class="vocab-grid">${cards}</div>`;
+}
+
+// ══════════════════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════════════════
+function openSettings() {
+  document.getElementById('apiKeyInput').value = apiKey;
+  document.getElementById('settingsModal').classList.remove('hidden');
+}
+
+function closeSettings() {
+  document.getElementById('settingsModal').classList.add('hidden');
+}
+
+function saveSettings() {
+  apiKey = document.getElementById('apiKeyInput').value.trim();
+  localStorage.setItem('ds_api_key', apiKey);
+  closeSettings();
+  if (currentStage === 'extend') renderExtend(UNITS[currentUnit]);
+}
+
+// ══════════════════════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════════════════════
+function esc(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+</script>
+</body>
+</html>
